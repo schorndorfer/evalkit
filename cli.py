@@ -101,7 +101,9 @@ def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_
         if tui:
             try:
                 from evalkit.tui import EvalKitApp
-                app = EvalKitApp(results)
+                import os
+                filename = os.path.basename(csv_file)
+                app = EvalKitApp(results, filename)
                 app.run()
                 sys.exit(0)
             except ImportError:
