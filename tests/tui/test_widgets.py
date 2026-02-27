@@ -1,7 +1,9 @@
 """Tests for TUI widgets."""
 
 from evalkit.tui.widgets.header import Header
+from evalkit.tui.widgets.footer import Footer
 from evalkit.types import EvaluationResults, EvaluationMode
+from textual.widgets import Footer as TextualFooter
 import numpy as np
 
 
@@ -35,3 +37,10 @@ def test_header_widget_regression():
     header = Header(results, "regression.csv")
     assert header.results == results
     assert header.filename == "regression.csv"
+
+
+def test_footer_widget():
+    """Test footer widget instantiation and inheritance."""
+    footer = Footer()
+    assert footer is not None
+    assert isinstance(footer, TextualFooter)
