@@ -2,6 +2,7 @@
 
 from evalkit.tui.widgets.header import Header
 from evalkit.tui.widgets.footer import Footer
+from evalkit.tui.widgets.summary_metrics import SummaryMetrics
 from evalkit.types import EvaluationResults, EvaluationMode
 from textual.widgets import Footer as TextualFooter
 import numpy as np
@@ -44,3 +45,42 @@ def test_footer_widget():
     footer = Footer()
     assert footer is not None
     assert isinstance(footer, TextualFooter)
+
+
+def test_summary_metrics_classification():
+    """Test summary metrics for classification."""
+    results = EvaluationResults(
+        mode=EvaluationMode.CLASSIFICATION,
+        metrics={
+            "accuracy": 0.92,
+            "macro_avg_precision": 0.91,
+            "macro_avg_recall": 0.90,
+            "macro_avg_f1_score": 0.905,
+            "cohen_kappa": 0.84,
+        },
+        predicted=np.array([]),
+        gold=np.array([]),
+        sample_count=50,
+    )
+
+    widget = SummaryMetrics(results)
+    assert widget.results == results
+
+
+def test_summary_metrics_regression():
+    """Test summary metrics for regression."""
+    results = EvaluationResults(
+        mode=EvaluationMode.REGRESSION,
+        metrics={
+            "r2_score": 0.996,
+            "mae": 4900.0,
+            "rmse": 4919.35,
+            "mape": 0.0186,
+        },
+        predicted=np.array([]),
+        gold=np.array([]),
+        sample_count=20,
+    )
+
+    widget = SummaryMetrics(results)
+    assert widget.results == results
