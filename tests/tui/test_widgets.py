@@ -3,6 +3,7 @@
 from evalkit.tui.widgets.header import Header
 from evalkit.tui.widgets.footer import Footer
 from evalkit.tui.widgets.summary_metrics import SummaryMetrics
+from evalkit.tui.widgets.metrics_table import MetricsTable
 from evalkit.types import EvaluationResults, EvaluationMode
 from textual.widgets import Footer as TextualFooter
 import numpy as np
@@ -84,3 +85,32 @@ def test_summary_metrics_regression():
 
     widget = SummaryMetrics(results)
     assert widget.results == results
+
+
+def test_metrics_table():
+    """Test detailed metrics table with various metric types."""
+    results = EvaluationResults(
+        mode=EvaluationMode.CLASSIFICATION,
+        metrics={
+            "accuracy": 0.92,
+            "macro_avg_precision": 0.91,
+            "numpy_metric": np.float64(0.85),
+            "int_metric": 42,
+        },
+        predicted=np.array([]),
+        gold=np.array([]),
+        sample_count=50,
+    )
+
+    table = MetricsTable(results)
+    assert table.results == results
+
+    # Verify that the widget stores the correct results
+    assert table.results.metrics["accuracy"] == 0.92
+    assert table.results.metrics["macro_avg_precision"] == 0.91
+    assert isinstance(table.results.metrics["numpy_metric"], np.number)
+    assert table.results.metrics["int_metric"] == 42
+
+    # Verify the compose method exists and is callable
+    assert hasattr(table, 'compose')
+    assert callable(table.compose)
