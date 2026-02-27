@@ -4,34 +4,80 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Python project managed with `uv`. The main entry point is `main.py`.
+EvalKit: A comprehensive evaluation library and CLI tool for calculating accuracy metrics on ML predictions. Supports both classification and regression tasks with rich terminal output, file export, and visualizations.
+
+Python project managed with `uv`.
 
 ## Development Commands
 
-### Running the Application
+### Running the CLI
 ```bash
-# Run the main script
-uv run python main.py
+# Run the CLI (development mode)
+uv run python cli.py evaluate <csv_file>
 
-# Or with standard Python
-python main.py
+# Run with options
+uv run python cli.py evaluate predictions.csv --pred predicted --gold actual --mode classification
+
+# After installation
+evalkit evaluate <csv_file>
+```
+
+### Testing
+```bash
+# Run all tests
+uv run pytest
+
+# Run with coverage
+uv run pytest --cov=evalkit --cov-report=term-missing
+
+# Run specific test file
+uv run pytest tests/test_evaluator.py
+```
+
+### Linting and Formatting
+```bash
+# Check code with ruff
+uv run ruff check .
+
+# Format code with ruff
+uv run ruff format .
 ```
 
 ### Package Management
 ```bash
+# Install dependencies
+uv sync
+
 # Add a dependency
 uv add <package-name>
 
 # Add a dev dependency
 uv add --dev <package-name>
 
-# Sync dependencies
-uv sync
+# Install as editable package
+uv pip install -e .
 ```
 
 ## Project Structure
 
-This is currently a minimal Python project with:
-- `main.py` - Entry point with a `main()` function
-- `pyproject.toml` - Project metadata and dependencies
-- For unit tests, let's use pytest. Use ruff for linting and formatting
+- `evalkit/` - Core library package
+  - `evaluator.py` - Main evaluation logic
+  - `data.py` - CSV loading and validation
+  - `types.py` - Type definitions and enums
+  - `metrics/` - Classification and regression metrics
+  - `formatters/` - Rich console output, exporters, visualizers
+- `cli.py` - Click-based CLI wrapper
+- `tests/` - Pytest test suite with fixtures
+- `docs/plans/` - Design documents
+
+## Testing
+
+- Use pytest for all tests
+- Test fixtures in `tests/fixtures/`
+- Aim for high coverage on core library code
+
+## Code Style
+
+- Use ruff for linting and formatting
+- Line length: 100 characters
+- Target Python 3.10+
