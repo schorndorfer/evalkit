@@ -58,6 +58,18 @@ uv add --dev <package-name>
 uv pip install -e .
 ```
 
+### TUI Development
+```bash
+# Run TUI in development
+uv run python cli.py evaluate <file> --tui
+
+# Test different layouts
+uv run python cli.py evaluate <file> --tui --tui-layout minimal
+
+# Run TUI tests
+uv run pytest tests/tui/ -v
+```
+
 ## Project Structure
 
 - `evalkit/` - Core library package
