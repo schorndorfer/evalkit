@@ -4,6 +4,7 @@ from evalkit.tui.widgets.header import Header
 from evalkit.tui.widgets.footer import Footer
 from evalkit.tui.widgets.summary_metrics import SummaryMetrics
 from evalkit.tui.widgets.metrics_table import MetricsTable
+from evalkit.tui.widgets.confusion_matrix import ConfusionMatrixWidget
 from evalkit.types import EvaluationResults, EvaluationMode
 from textual.widgets import Footer as TextualFooter
 import numpy as np
@@ -114,3 +115,47 @@ def test_metrics_table():
     # Verify the compose method exists and is callable
     assert hasattr(table, 'compose')
     assert callable(table.compose)
+
+
+def test_confusion_matrix_widget():
+    """Test confusion matrix widget."""
+    results = EvaluationResults(
+        mode=EvaluationMode.CLASSIFICATION,
+        metrics={
+            "confusion_matrix": np.array([[8, 1], [1, 10]]),
+            "labels": ["negative", "positive"],
+        },
+        predicted=np.array([]),
+        gold=np.array([]),
+        sample_count=20,
+    )
+
+    widget = ConfusionMatrixWidget(results)
+    assert widget.results == results
+
+    # Verify the widget stores the correct confusion matrix and labels
+    assert "confusion_matrix" in widget.results.metrics
+    assert "labels" in widget.results.metrics
+    assert widget.results.metrics["labels"] == ["negative", "positive"]
+
+    # Verify the compose method exists and is callable
+    assert hasattr(widget, 'compose')
+    assert callable(widget.compose)
+
+
+def test_confusion_matrix_widget_no_matrix():
+    """Test confusion matrix widget when no matrix is available."""
+    results = EvaluationResults(
+        mode=EvaluationMode.CLASSIFICATION,
+        metrics={"accuracy": 0.92},  # No confusion matrix
+        predicted=np.array([]),
+        gold=np.array([]),
+        sample_count=20,
+    )
+
+    widget = ConfusionMatrixWidget(results)
+    assert widget.results == results
+
+    # Should still be composable without errors
+    assert hasattr(widget, 'compose')
+    assert callable(widget.compose)
