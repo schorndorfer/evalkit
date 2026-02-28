@@ -143,8 +143,8 @@ def _display_regression_metrics(results: EvaluationResults, console: Console) ->
     table.add_section()
 
     # Residual statistics
-    table.add_row("Mean Residual", f"{metrics['mean_residual']:.2f}")
-    table.add_row("Std Residual", f"{metrics['std_residual']:.2f}")
+    table.add_row("Mean Residual", f"{metrics['mean_residual']:.4f}")
+    table.add_row("Std Residual", f"{metrics['std_residual']:.4f}")
 
     console.print(table)
     console.print()

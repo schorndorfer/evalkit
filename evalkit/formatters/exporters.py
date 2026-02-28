@@ -74,7 +74,7 @@ def export_to_csv(results: EvaluationResults, output_path: Path) -> None:
         # Write main metrics (skip complex objects like confusion matrix)
         for key, value in results.metrics.items():
             if isinstance(value, (int, float, np.number)):
-                writer.writerow([key, f"{value:.2f}" if isinstance(value, float) else value])
+                writer.writerow([key, f"{value:.4f}" if isinstance(value, float) else value])
             elif isinstance(value, str):
                 writer.writerow([key, value])
             # Skip arrays, dicts, etc.

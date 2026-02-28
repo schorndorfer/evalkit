@@ -156,8 +156,8 @@ def _generate_regression_plots(results: EvaluationResults, output_dir: Path) -> 
         ax.set_xlabel("Residual Value")
         ax.set_ylabel("Frequency")
         ax.set_title(
-            f"Residual Distribution (μ={results.metrics['mean_residual']:.2f}, "
-            f"σ={results.metrics['std_residual']:.2f})"
+            f"Residual Distribution (μ={results.metrics['mean_residual']:.4f}, "
+            f"σ={results.metrics['std_residual']:.4f})"
         )
         ax.grid(True, alpha=0.3, axis="y")
 
