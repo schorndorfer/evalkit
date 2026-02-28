@@ -20,12 +20,12 @@ class DashboardLayout(Container):
     DashboardLayout {
         layout: grid;
         grid-size: 2 2;
-        grid-gutter: 1;
+        grid-gutter: 2;
         padding: 1;
         height: 100%;
     }
 
     DashboardLayout > * {
-        border: solid $primary;
+        border: round $primary;
     }
     """

@@ -36,6 +36,8 @@ class ScatterPlot(Container):
 
     def on_mount(self) -> None:
         """Setup plot after widget is mounted."""
+        self.border_title = "[bold]Predicted vs Actual[/bold]"
+
         if self.results.mode != EvaluationMode.REGRESSION:
             return
 
@@ -46,12 +48,12 @@ class ScatterPlot(Container):
         y_pred = self.results.predicted
 
         # Scatter plot
-        plot.scatter(y_true, y_pred, marker="dot")
+        plot.scatter(y_true, y_pred, marker="dot", color="cyan")
 
         # Perfect prediction line
         min_val = min(y_true.min(), y_pred.min())
         max_val = max(y_true.max(), y_pred.max())
-        plot.plot([min_val, max_val], [min_val, max_val], marker="hd")
+        plot.plot([min_val, max_val], [min_val, max_val], marker="hd", color="green", label="Perfect fit")
 
         plot.xlabel("Actual Values")
         plot.ylabel("Predicted Values")
@@ -98,6 +100,8 @@ class BarChart(Container):
 
     def on_mount(self) -> None:
         """Setup plot after widget is mounted."""
+        self.border_title = "[bold]Per-Class Metrics[/bold]"
+
         if self.results.mode != EvaluationMode.CLASSIFICATION:
             return
 
@@ -119,7 +123,7 @@ class BarChart(Container):
             classes,
             [precision, recall, f1],
             orientation="h",
-            labels=["Precision", "Recall", "F1-Score"]
+            labels=["Precision", "Recall", "F1-Score"],
         )
 
         plot.xlabel("Score")

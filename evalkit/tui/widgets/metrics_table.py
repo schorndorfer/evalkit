@@ -1,11 +1,17 @@
 """Detailed metrics table widget for TUI."""
 
 import numpy as np
+from rich.text import Text
 from textual.app import ComposeResult
 from textual.widgets import DataTable
 from textual.containers import Container
 
 from evalkit.types import EvaluationResults
+
+
+def _format_key(key: str) -> str:
+    """Convert snake_case metric key to a human-readable Title Case label."""
+    return key.replace("_", " ").title()
 
 
 class MetricsTable(Container):
@@ -21,6 +27,10 @@ class MetricsTable(Container):
         super().__init__()
         self.results = results
 
+    def on_mount(self) -> None:
+        """Set border title after mounting."""
+        self.border_title = "[bold]All Metrics[/bold]"
+
     def compose(self) -> ComposeResult:
         """
         Compose metrics table content.
@@ -32,19 +42,22 @@ class MetricsTable(Container):
         table.add_column("Metric", key="metric")
         table.add_column("Value", key="value")
 
-        # Add rows for each metric
+        # Add rows for each metric with formatted keys and colored values
         for key, value in self.results.metrics.items():
-            # Skip complex objects
             if isinstance(value, (int, float, np.number)):
-                formatted_value = f"{value:.4f}" if isinstance(value, float) else str(value)
-                table.add_row(key, formatted_value)
+                label = Text(_format_key(key), style="bold")
+                if isinstance(value, float) or isinstance(value, np.floating):
+                    formatted = Text(f"{value:.4f}", style="cyan")
+                else:
+                    formatted = Text(str(value), style="cyan")
+                table.add_row(label, formatted)
 
         yield table
 
     DEFAULT_CSS = """
     MetricsTable {
         height: 100%;
-        border: solid $primary;
+        border: round $primary;
         padding: 1;
     }
 
