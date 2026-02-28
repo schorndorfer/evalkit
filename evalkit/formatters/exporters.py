@@ -115,6 +115,15 @@ def _format_classification_markdown(metrics: dict) -> list[str]:
     lines.append(f"| Macro Avg Recall | {metrics['macro_avg_recall']:.4f} |")
     lines.append(f"| Macro Avg F1-Score | {metrics['macro_avg_f1_score']:.4f} |")
 
+    # Binary classification specifics
+    if metrics.get("is_binary", False):
+        lines.append(f"| Sensitivity (Recall) | {metrics['sensitivity']:.4f} |")
+        lines.append(f"| Specificity | {metrics['specificity']:.4f} |")
+        lines.append(f"| True Positives | {metrics['true_positives']} |")
+        lines.append(f"| True Negatives | {metrics['true_negatives']} |")
+        lines.append(f"| False Positives | {metrics['false_positives']} |")
+        lines.append(f"| False Negatives | {metrics['false_negatives']} |")
+
     # Per-class metrics
     if "per_class" in metrics and metrics["per_class"]:
         lines.append("\n## Per-Class Metrics\n")
