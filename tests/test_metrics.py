@@ -21,6 +21,8 @@ class TestClassificationMetrics:
         assert metrics["macro_avg_recall"] == 1.0
         assert metrics["macro_avg_f1_score"] == 1.0
         assert metrics["is_binary"] is True
+        assert metrics["sensitivity"] == 1.0
+        assert metrics["specificity"] == 1.0
 
     def test_binary_classification_with_errors(self):
         """Test metrics with some errors."""
@@ -52,6 +54,23 @@ class TestClassificationMetrics:
 
         assert "confusion_matrix" in metrics
         assert metrics["confusion_matrix"].shape == (2, 2)
+
+    def test_binary_sensitivity_specificity(self):
+        """Test sensitivity and specificity calculation for binary classification."""
+        # TP=2, TN=3, FP=1, FN=2
+        y_true = np.array([1, 1, 1, 1, 0, 0, 0, 0])
+        y_pred = np.array([1, 1, 0, 0, 0, 0, 0, 1])
+
+        metrics = calculate_classification_metrics(y_true, y_pred)
+
+        # Sensitivity = TP / (TP + FN) = 2 / (2 + 2) = 0.5
+        assert metrics["sensitivity"] == 0.5
+        # Specificity = TN / (TN + FP) = 3 / (3 + 1) = 0.75
+        assert metrics["specificity"] == 0.75
+        assert metrics["true_positives"] == 2
+        assert metrics["true_negatives"] == 3
+        assert metrics["false_positives"] == 1
+        assert metrics["false_negatives"] == 2
 
 
 class TestRegressionMetrics:

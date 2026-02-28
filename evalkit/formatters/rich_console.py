@@ -74,6 +74,7 @@ def _display_classification_metrics(results: EvaluationResults, console: Console
     # Binary classification specifics
     if metrics.get("is_binary", False):
         table.add_section()
+        table.add_row("Sensitivity (Recall)", f"{metrics['sensitivity']:.4f}")
         table.add_row("Specificity", f"{metrics['specificity']:.4f}")
         table.add_row("True Positives", str(metrics["true_positives"]))
         table.add_row("True Negatives", str(metrics["true_negatives"]))

@@ -86,9 +86,10 @@ def calculate_classification_metrics(
     # Check if binary classification
     if len(labels) == 2:
         metrics["is_binary"] = True
-        # For binary classification, calculate specificity
+        # For binary classification, calculate specificity and sensitivity
         tn, fp, fn, tp = conf_matrix.ravel()
         metrics["specificity"] = tn / (tn + fp) if (tn + fp) > 0 else 0
+        metrics["sensitivity"] = tp / (tp + fn) if (tp + fn) > 0 else 0
         metrics["true_negatives"] = int(tn)
         metrics["false_positives"] = int(fp)
         metrics["false_negatives"] = int(fn)

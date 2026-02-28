@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "test-project"
+name = "evalkit"
 version = "0.1.0"
 description = "EvalKit: A comprehensive evaluation library and CLI for ML predictions"
 readme = "README.md"
@@ -16,6 +16,9 @@ dependencies = [
     "rich>=13.0.0",
     "matplotlib>=3.7.0",
     "seaborn>=0.12.0",
+    "textual>=0.47.0",
+    "textual-plotext>=0.2.0",
+    "plotext>=5.2.0",
 ]
 
 [project.optional-dependencies]
@@ -38,3 +41,11 @@ python_files = "test_*.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["evalkit"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.4",
+]

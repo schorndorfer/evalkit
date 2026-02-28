@@ -11,6 +11,7 @@ from evalkit.formatters.exporters import export_results
 from evalkit.formatters.visualizers import generate_visualizations
 
 console = Console()
+console_err = Console(stderr=True)
 
 
 @click.group()
@@ -69,7 +70,24 @@ def cli():
     is_flag=True,
     help="Skip terminal output (useful with --output)",
 )
-def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_display):
+@click.option(
+    "--tui-layout",
+    type=click.Choice(["minimal", "standard", "full"]),
+    default="full",
+    help="TUI layout style",
+)
+@click.option(
+    "--tui-theme",
+    type=click.Choice(["dark", "light", "auto"]),
+    default="dark",
+    help="TUI color theme",
+)
+@click.option(
+    "--tui",
+    is_flag=True,
+    help="Launch interactive TUI (Terminal User Interface) - takes precedence over other output options",
+)
+def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_display, tui_layout, tui_theme, tui):
     """
     Evaluate predictions from a CSV file.
 
@@ -91,6 +109,24 @@ def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_
         # Run evaluation
         results = evaluator.evaluate()
 
+        # Launch TUI if requested
+        if tui:
+            try:
+                from evalkit.tui import EvalKitApp
+                from evalkit.tui.config import TUIConfig
+                import os
+                filename = os.path.basename(csv_file)
+                config = TUIConfig.from_args(tui_layout, tui_theme)
+                app = EvalKitApp(results, filename, config)
+                app.run()
+                sys.exit(0)
+            except ImportError:
+                console_err.print("[red]Error: Textual library not installed. Install with: pip install textual[/red]")
+                sys.exit(2)
+            except Exception as e:
+                console_err.print(f"[red]Error launching TUI: {e}[/red]")
+                sys.exit(2)
+
         # Display results in terminal (unless --no-display)
         if not no_display:
             display_results(results, console)
@@ -101,7 +137,7 @@ def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_
                 export_results(results, output)
                 console.print(f"[green]✓ Results saved to {output}[/green]")
             except Exception as e:
-                console.print(f"[red]Error exporting results: {e}[/red]", file=sys.stderr)
+                console_err.print(f"[red]Error exporting results: {e}[/red]")
                 sys.exit(2)
 
         # Generate visualizations if requested
@@ -119,13 +155,13 @@ def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_
         sys.exit(0)
 
     except FileNotFoundError as e:
-        console.print(f"[red]Error: {e}[/red]", file=sys.stderr)
+        console_err.print(f"[red]Error: {e}[/red]")
         sys.exit(1)
     except DataValidationError as e:
-        console.print(f"[red]Error: {e}[/red]", file=sys.stderr)
+        console_err.print(f"[red]Error: {e}[/red]")
         sys.exit(1)
     except Exception as e:
-        console.print(f"[red]Unexpected error: {e}[/red]", file=sys.stderr)
+        console_err.print(f"[red]Unexpected error: {e}[/red]")
         import traceback
 
         traceback.print_exc()
