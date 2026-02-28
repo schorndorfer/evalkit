@@ -62,7 +62,10 @@ class ConfusionMatrixWidget(Container):
 
                     if i == j:
                         # Diagonal: correct predictions — bright green
-                        row.append(f"[bold bright_green]{value}[/bold bright_green] [dim green]({pct:.1f}%)[/dim green]")
+                        row.append(
+                            f"[bold bright_green]{value}[/bold bright_green]"
+                            f" [dim green]({pct:.1f}%)[/dim green]"
+                        )
                     elif value > 0:
                         # Off-diagonal with misclassifications — red
                         row.append(f"[red]{value}[/red] [dim red]({pct:.1f}%)[/dim red]")

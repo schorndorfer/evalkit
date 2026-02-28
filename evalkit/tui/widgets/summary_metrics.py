@@ -7,6 +7,7 @@ from textual.containers import Container, Horizontal
 from textual.widgets import Static
 
 from evalkit.types import EvaluationResults, EvaluationMode
+from evalkit.tui.utils import get_perf_color
 
 
 _METRIC_ICONS: dict[str, str] = {
@@ -20,19 +21,6 @@ _METRIC_ICONS: dict[str, str] = {
     "RMSE": "📐",
     "MAPE": "📊",
 }
-
-
-def _get_color(value: float, higher_is_better: bool) -> str:
-    """Return a Rich color string based on performance value."""
-    if not higher_is_better:
-        return "cyan"  # Neutral for lower-is-better / unbounded metrics
-    if value >= 0.9:
-        return "bright_green"
-    elif value >= 0.75:
-        return "green"
-    elif value >= 0.5:
-        return "yellow"
-    return "red"
 
 
 def _progress_bar(value: float, width: int = 10) -> str:
@@ -55,7 +43,7 @@ class MetricBox(Static):
             higher_is_better: Whether a higher value indicates better performance
         """
         icon = _METRIC_ICONS.get(label, "•")
-        color = _get_color(value, higher_is_better)
+        color = get_perf_color(value, higher_is_better)
 
         if higher_is_better and 0.0 <= value <= 1.0:
             bar = _progress_bar(value)

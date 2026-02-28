@@ -36,10 +36,11 @@ class ScatterPlot(Container):
 
     def on_mount(self) -> None:
         """Setup plot after widget is mounted."""
-        self.border_title = "[bold]Predicted vs Actual[/bold]"
-
         if self.results.mode != EvaluationMode.REGRESSION:
+            self.border_title = "[dim]Predicted vs Actual[/dim]"
             return
+
+        self.border_title = "[bold]Predicted vs Actual[/bold]"
 
         plt_widget = self.query_one(PlotextPlot)
         plot = plt_widget.plt
@@ -53,7 +54,9 @@ class ScatterPlot(Container):
         # Perfect prediction line
         min_val = min(y_true.min(), y_pred.min())
         max_val = max(y_true.max(), y_pred.max())
-        plot.plot([min_val, max_val], [min_val, max_val], marker="hd", color="green", label="Perfect fit")
+        plot.plot(
+            [min_val, max_val], [min_val, max_val], marker="hd", color="green", label="Perfect fit"
+        )
 
         plot.xlabel("Actual Values")
         plot.ylabel("Predicted Values")
@@ -100,10 +103,11 @@ class BarChart(Container):
 
     def on_mount(self) -> None:
         """Setup plot after widget is mounted."""
-        self.border_title = "[bold]Per-Class Metrics[/bold]"
-
         if self.results.mode != EvaluationMode.CLASSIFICATION:
+            self.border_title = "[dim]Per-Class Metrics[/dim]"
             return
+
+        self.border_title = "[bold]Per-Class Metrics[/bold]"
 
         metrics = self.results.metrics
         if "per_class" not in metrics:

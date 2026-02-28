@@ -5,6 +5,7 @@ from textual.widgets import Static
 from textual.containers import Container
 
 from evalkit.types import EvaluationResults, EvaluationMode
+from evalkit.tui.utils import get_perf_color, get_perf_label
 
 
 class Header(Container):
@@ -21,26 +22,6 @@ class Header(Container):
         super().__init__()
         self.results = results
         self.filename = filename
-
-    def _get_perf_color(self, value: float) -> str:
-        """Return Rich color string based on performance value."""
-        if value >= 0.9:
-            return "bright_green"
-        elif value >= 0.75:
-            return "green"
-        elif value >= 0.5:
-            return "yellow"
-        return "red"
-
-    def _get_perf_label(self, value: float) -> str:
-        """Return performance label based on value."""
-        if value >= 0.9:
-            return "Excellent"
-        elif value >= 0.75:
-            return "Good"
-        elif value >= 0.5:
-            return "Fair"
-        return "Poor"
 
     def compose(self) -> ComposeResult:
         """
@@ -62,10 +43,13 @@ class Header(Container):
             metric_val = self.results.metrics.get("r2_score", 0)
             mode_icon = "📉"
 
-        color = self._get_perf_color(metric_val)
-        perf = self._get_perf_label(metric_val)
+        color = get_perf_color(metric_val)
+        perf = get_perf_label(metric_val)
 
-        title_text = "[bold cyan]⚡ EvalKit[/bold cyan]  [dim]│[/dim]  [bold]ML Evaluation Dashboard[/bold]"
+        title_text = (
+            "[bold cyan]⚡ EvalKit[/bold cyan]  [dim]│[/dim]  "
+            "[bold]ML Evaluation Dashboard[/bold]"
+        )
         info_text = (
             f"{mode_icon} [bold]{mode}[/bold]  [dim]│[/dim]  "
             f"📁 [dim]{self.filename}[/dim]  [dim]│[/dim]  "

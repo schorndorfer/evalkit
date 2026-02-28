@@ -9,9 +9,18 @@ from textual.containers import Container
 from evalkit.types import EvaluationResults
 
 
+_KEY_OVERRIDES: dict[str, str] = {
+    "mae": "MAE",
+    "rmse": "RMSE",
+    "mape": "MAPE",
+    "r2_score": "R² Score",
+    "cohen_kappa": "Cohen's Kappa",
+}
+
+
 def _format_key(key: str) -> str:
     """Convert snake_case metric key to a human-readable Title Case label."""
-    return key.replace("_", " ").title()
+    return _KEY_OVERRIDES.get(key, key.replace("_", " ").title())
 
 
 class MetricsTable(Container):
@@ -46,7 +55,7 @@ class MetricsTable(Container):
         for key, value in self.results.metrics.items():
             if isinstance(value, (int, float, np.number)):
                 label = Text(_format_key(key), style="bold")
-                if isinstance(value, float) or isinstance(value, np.floating):
+                if not isinstance(value, int):
                     formatted = Text(f"{value:.4f}", style="cyan")
                 else:
                     formatted = Text(str(value), style="cyan")
