@@ -5,6 +5,7 @@ from evalkit.tui.widgets.footer import Footer
 from evalkit.tui.widgets.summary_metrics import SummaryMetrics
 from evalkit.tui.widgets.metrics_table import MetricsTable
 from evalkit.tui.widgets.confusion_matrix import ConfusionMatrixWidget
+from evalkit.tui.widgets.graph_panel import ScatterPlot, BarChart
 from evalkit.types import EvaluationResults, EvaluationMode
 from textual.widgets import Footer as TextualFooter
 import numpy as np
@@ -157,5 +158,46 @@ def test_confusion_matrix_widget_no_matrix():
     assert widget.results == results
 
     # Should still be composable without errors
+    assert hasattr(widget, 'compose')
+    assert callable(widget.compose)
+
+
+def test_scatter_plot_widget():
+    """Test scatter plot widget."""
+    results = EvaluationResults(
+        mode=EvaluationMode.REGRESSION,
+        metrics={"r2_score": 0.996},
+        predicted=np.array([1.0, 2.0, 3.0]),
+        gold=np.array([1.1, 2.1, 2.9]),
+        sample_count=3,
+    )
+
+    widget = ScatterPlot(results)
+    assert widget.results == results
+
+    # Verify compose method exists and is callable
+    assert hasattr(widget, 'compose')
+    assert callable(widget.compose)
+
+
+def test_bar_chart_widget():
+    """Test bar chart widget."""
+    results = EvaluationResults(
+        mode=EvaluationMode.CLASSIFICATION,
+        metrics={
+            "per_class": {
+                "cat": {"precision": 0.9, "recall": 0.85, "f1_score": 0.87},
+                "dog": {"precision": 0.88, "recall": 0.92, "f1_score": 0.90},
+            }
+        },
+        predicted=np.array([]),
+        gold=np.array([]),
+        sample_count=20,
+    )
+
+    widget = BarChart(results)
+    assert widget.results == results
+
+    # Verify compose method exists and is callable
     assert hasattr(widget, 'compose')
     assert callable(widget.compose)
