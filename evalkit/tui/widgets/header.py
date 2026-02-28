@@ -54,7 +54,7 @@ class Header(Container):
             f"{mode_icon} [bold]{mode}[/bold]  [dim]│[/dim]  "
             f"📁 [dim]{self.filename}[/dim]  [dim]│[/dim]  "
             f"📈 [bold]{samples:,}[/bold] samples  [dim]│[/dim]  "
-            f"{metric_name}: [bold {color}]{metric_val:.4f}[/bold {color}] [dim]({perf})[/dim]"
+            f"{metric_name}: [bold {color}]{metric_val:.2f}[/bold {color}] [dim]({perf})[/dim]"
         )
 
         yield Static(title_text, id="header-title")

@@ -121,7 +121,7 @@ def _generate_regression_plots(results: EvaluationResults, output_dir: Path) -> 
 
     ax.set_xlabel("Actual Values")
     ax.set_ylabel("Predicted Values")
-    ax.set_title(f"Predicted vs Actual (R² = {results.metrics['r2_score']:.4f})")
+    ax.set_title(f"Predicted vs Actual (R² = {results.metrics['r2_score']:.2f})")
     ax.legend()
     ax.grid(True, alpha=0.3)
 

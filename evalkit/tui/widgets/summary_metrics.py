@@ -49,13 +49,13 @@ class MetricBox(Static):
             bar = _progress_bar(value)
             content = (
                 f"{icon} [bold]{label}[/bold]\n"
-                f"[{color} bold]{value:.4f}[/{color} bold]\n"
+                f"[{color} bold]{value:.2f}[/{color} bold]\n"
                 f"[{color}]{bar}[/{color}]"
             )
         else:
             content = (
                 f"{icon} [bold]{label}[/bold]\n"
-                f"[{color} bold]{value:.4f}[/{color} bold]"
+                f"[{color} bold]{value:.2f}[/{color} bold]"
             )
 
         super().__init__(content)
