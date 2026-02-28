@@ -1,9 +1,11 @@
 """Main Textual application for EvalKit TUI."""
 
 from textual.app import App, ComposeResult
+from textual.widgets import Static
 
 from evalkit.types import EvaluationResults
-from evalkit.tui.widgets import Header, Footer
+from evalkit.tui.widgets import Header, Footer, SummaryMetrics, MetricsTable
+from evalkit.tui.layouts import DashboardLayout
 
 
 class EvalKitApp(App):
@@ -37,7 +39,14 @@ class EvalKitApp(App):
             Generator yielding UI widgets
         """
         yield Header(self.results, self.filename)
-        # Content will go here
+
+        # Dashboard with 4 panels
+        with DashboardLayout():
+            yield SummaryMetrics(self.results)
+            yield Static("Graph 1")  # Placeholder
+            yield MetricsTable(self.results)
+            yield Static("Graph 2")  # Placeholder
+
         yield Footer()
 
     def action_help(self) -> None:
