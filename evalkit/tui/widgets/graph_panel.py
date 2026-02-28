@@ -4,7 +4,6 @@ from textual.app import ComposeResult
 from textual.widgets import Static
 from textual.containers import Container
 from textual_plotext import PlotextPlot
-import plotext as plt
 
 from evalkit.types import EvaluationResults, EvaluationMode
 

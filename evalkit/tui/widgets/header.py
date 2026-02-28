@@ -3,7 +3,6 @@
 from textual.app import ComposeResult
 from textual.widgets import Static
 from textual.containers import Container
-from rich.text import Text
 
 from evalkit.types import EvaluationResults, EvaluationMode
 

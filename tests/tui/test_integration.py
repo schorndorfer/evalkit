@@ -45,7 +45,7 @@ def test_app_initializes_regression(regression_app):
 @pytest.mark.asyncio
 async def test_app_composes_widgets(classification_app):
     """Test app composes all required widgets."""
-    async with classification_app.run_test() as pilot:
+    async with classification_app.run_test():
         # Check header exists
         assert classification_app.query_one("Header")
 
