@@ -8,6 +8,7 @@ from evalkit.tui.widgets.confusion_matrix import ConfusionMatrixWidget
 from evalkit.tui.widgets.graph_panel import ScatterPlot, BarChart
 from evalkit.tui.widgets.export_dialog import ExportDialog
 from evalkit.tui.widgets.help_screen import HelpScreen
+from evalkit.tui.widgets.error_dialog import ErrorDialog
 
 __all__ = [
     "Header",
@@ -19,4 +20,5 @@ __all__ = [
     "BarChart",
     "ExportDialog",
     "HelpScreen",
+    "ErrorDialog",
 ]

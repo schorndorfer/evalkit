@@ -17,6 +17,7 @@ from evalkit.tui.widgets import (
     BarChart,
     ExportDialog,
     HelpScreen,
+    ErrorDialog,
 )
 from evalkit.tui.layouts import DashboardLayout
 from evalkit.formatters.exporters import export_results
@@ -116,8 +117,13 @@ class EvalKitApp(App):
             if result:
                 try:
                     export_results(self.results, Path(result["path"]))
-                    self.notify(f"Exported to {result['path']}")
+                    self.notify(f"Exported to {result['path']}", severity="information")
                 except Exception as e:
-                    self.notify(f"Export failed: {e}", severity="error")
+                    self.push_screen(
+                        ErrorDialog(
+                            "Export Failed",
+                            f"Failed to export to {result['path']}\n\nReason: {str(e)}"
+                        )
+                    )
 
         self.push_screen(ExportDialog(), handle_export)
