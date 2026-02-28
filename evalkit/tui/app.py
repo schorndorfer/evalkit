@@ -1,5 +1,7 @@
 """Main Textual application for EvalKit TUI."""
 
+from pathlib import Path
+
 from textual.app import App, ComposeResult
 from textual.widgets import Static
 
@@ -12,8 +14,10 @@ from evalkit.tui.widgets import (
     ConfusionMatrixWidget,
     ScatterPlot,
     BarChart,
+    ExportDialog,
 )
 from evalkit.tui.layouts import DashboardLayout
+from evalkit.formatters.exporters import export_results
 
 
 class EvalKitApp(App):
@@ -25,6 +29,7 @@ class EvalKitApp(App):
         ("q", "quit", "Quit"),
         ("h", "help", "Help"),
         ("?", "help", "Help"),
+        ("e", "export", "Export"),
     ]
 
     def __init__(self, results: EvaluationResults, filename: str = "predictions.csv"):
@@ -66,3 +71,21 @@ class EvalKitApp(App):
     def action_help(self) -> None:
         """Show help screen."""
         self.bell()  # Placeholder
+
+    def action_export(self) -> None:
+        """Show export dialog."""
+        def handle_export(result: dict[str, str] | None) -> None:
+            """
+            Handle export dialog result.
+
+            Args:
+                result: Dictionary with 'format' and 'path' keys, or None if cancelled
+            """
+            if result:
+                try:
+                    export_results(self.results, Path(result["path"]))
+                    self.notify(f"Exported to {result['path']}")
+                except Exception as e:
+                    self.notify(f"Export failed: {e}", severity="error")
+
+        self.push_screen(ExportDialog(), handle_export)

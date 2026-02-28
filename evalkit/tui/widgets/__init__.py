@@ -6,6 +6,7 @@ from evalkit.tui.widgets.summary_metrics import SummaryMetrics
 from evalkit.tui.widgets.metrics_table import MetricsTable
 from evalkit.tui.widgets.confusion_matrix import ConfusionMatrixWidget
 from evalkit.tui.widgets.graph_panel import ScatterPlot, BarChart
+from evalkit.tui.widgets.export_dialog import ExportDialog
 
 __all__ = [
     "Header",
@@ -15,4 +16,5 @@ __all__ = [
     "ConfusionMatrixWidget",
     "ScatterPlot",
     "BarChart",
+    "ExportDialog",
 ]
