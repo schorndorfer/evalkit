@@ -56,7 +56,7 @@ class MetricsTable(Container):
             if isinstance(value, (int, float, np.number)):
                 label = Text(_format_key(key), style="bold")
                 if not isinstance(value, int):
-                    formatted = Text(f"{value:.4f}", style="cyan")
+                    formatted = Text(f"{value:.2f}", style="cyan")
                 else:
                     formatted = Text(str(value), style="cyan")
                 table.add_row(label, formatted)

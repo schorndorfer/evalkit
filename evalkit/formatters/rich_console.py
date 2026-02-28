@@ -51,31 +51,31 @@ def _display_classification_metrics(results: EvaluationResults, console: Console
     table.add_column("Value", justify="right", style="green")
 
     # Overall metrics
-    table.add_row("Accuracy", f"{metrics['accuracy']:.4f}")
-    table.add_row("Cohen's Kappa", f"{metrics['cohen_kappa']:.4f}")
-    table.add_row("Matthews Corr Coeff", f"{metrics['matthews_corrcoef']:.4f}")
+    table.add_row("Accuracy", f"{metrics['accuracy']:.2f}")
+    table.add_row("Cohen's Kappa", f"{metrics['cohen_kappa']:.2f}")
+    table.add_row("Matthews Corr Coeff", f"{metrics['matthews_corrcoef']:.2f}")
 
     # Separator
     table.add_section()
 
     # Macro averages
-    table.add_row("Macro Avg Precision", f"{metrics['macro_avg_precision']:.4f}")
-    table.add_row("Macro Avg Recall", f"{metrics['macro_avg_recall']:.4f}")
-    table.add_row("Macro Avg F1-Score", f"{metrics['macro_avg_f1_score']:.4f}")
+    table.add_row("Macro Avg Precision", f"{metrics['macro_avg_precision']:.2f}")
+    table.add_row("Macro Avg Recall", f"{metrics['macro_avg_recall']:.2f}")
+    table.add_row("Macro Avg F1-Score", f"{metrics['macro_avg_f1_score']:.2f}")
 
     # Separator
     table.add_section()
 
     # Weighted averages
-    table.add_row("Weighted Avg Precision", f"{metrics['weighted_avg_precision']:.4f}")
-    table.add_row("Weighted Avg Recall", f"{metrics['weighted_avg_recall']:.4f}")
-    table.add_row("Weighted Avg F1-Score", f"{metrics['weighted_avg_f1_score']:.4f}")
+    table.add_row("Weighted Avg Precision", f"{metrics['weighted_avg_precision']:.2f}")
+    table.add_row("Weighted Avg Recall", f"{metrics['weighted_avg_recall']:.2f}")
+    table.add_row("Weighted Avg F1-Score", f"{metrics['weighted_avg_f1_score']:.2f}")
 
     # Binary classification specifics
     if metrics.get("is_binary", False):
         table.add_section()
-        table.add_row("Sensitivity (Recall)", f"{metrics['sensitivity']:.4f}")
-        table.add_row("Specificity", f"{metrics['specificity']:.4f}")
+        table.add_row("Sensitivity (Recall)", f"{metrics['sensitivity']:.2f}")
+        table.add_row("Specificity", f"{metrics['specificity']:.2f}")
         table.add_row("True Positives", str(metrics["true_positives"]))
         table.add_row("True Negatives", str(metrics["true_negatives"]))
         table.add_row("False Positives", str(metrics["false_positives"]))
@@ -98,9 +98,9 @@ def _display_classification_metrics(results: EvaluationResults, console: Console
         for class_label, class_metrics in metrics["per_class"].items():
             class_table.add_row(
                 str(class_label),
-                f"{class_metrics['precision']:.4f}",
-                f"{class_metrics['recall']:.4f}",
-                f"{class_metrics['f1_score']:.4f}",
+                f"{class_metrics['precision']:.2f}",
+                f"{class_metrics['recall']:.2f}",
+                f"{class_metrics['f1_score']:.2f}",
                 str(class_metrics["support"]),
             )
 
@@ -122,29 +122,29 @@ def _display_regression_metrics(results: EvaluationResults, console: Console) ->
     table.add_column("Value", justify="right", style="green")
 
     # Error metrics
-    table.add_row("MAE (Mean Absolute Error)", f"{metrics['mae']:.4f}")
-    table.add_row("MSE (Mean Squared Error)", f"{metrics['mse']:.4f}")
-    table.add_row("RMSE (Root Mean Squared Error)", f"{metrics['rmse']:.4f}")
-    table.add_row("Median Absolute Error", f"{metrics['median_absolute_error']:.4f}")
-    table.add_row("Max Error", f"{metrics['max_error']:.4f}")
+    table.add_row("MAE (Mean Absolute Error)", f"{metrics['mae']:.2f}")
+    table.add_row("MSE (Mean Squared Error)", f"{metrics['mse']:.2f}")
+    table.add_row("RMSE (Root Mean Squared Error)", f"{metrics['rmse']:.2f}")
+    table.add_row("Median Absolute Error", f"{metrics['median_absolute_error']:.2f}")
+    table.add_row("Max Error", f"{metrics['max_error']:.2f}")
 
     if metrics.get("mape") is not None:
-        table.add_row("MAPE (Mean Absolute % Error)", f"{metrics['mape']:.4f}")
+        table.add_row("MAPE (Mean Absolute % Error)", f"{metrics['mape']:.2f}")
 
     # Separator
     table.add_section()
 
     # Score metrics
-    table.add_row("R² Score", f"{metrics['r2_score']:.4f}")
-    table.add_row("Adjusted R²", f"{metrics['adjusted_r2']:.4f}")
-    table.add_row("Explained Variance", f"{metrics['explained_variance']:.4f}")
+    table.add_row("R² Score", f"{metrics['r2_score']:.2f}")
+    table.add_row("Adjusted R²", f"{metrics['adjusted_r2']:.2f}")
+    table.add_row("Explained Variance", f"{metrics['explained_variance']:.2f}")
 
     # Separator
     table.add_section()
 
     # Residual statistics
-    table.add_row("Mean Residual", f"{metrics['mean_residual']:.4f}")
-    table.add_row("Std Residual", f"{metrics['std_residual']:.4f}")
+    table.add_row("Mean Residual", f"{metrics['mean_residual']:.2f}")
+    table.add_row("Std Residual", f"{metrics['std_residual']:.2f}")
 
     console.print(table)
     console.print()

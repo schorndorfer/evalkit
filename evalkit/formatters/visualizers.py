@@ -121,7 +121,7 @@ def _generate_regression_plots(results: EvaluationResults, output_dir: Path) -> 
 
     ax.set_xlabel("Actual Values")
     ax.set_ylabel("Predicted Values")
-    ax.set_title(f"Predicted vs Actual (R² = {results.metrics['r2_score']:.4f})")
+    ax.set_title(f"Predicted vs Actual (R² = {results.metrics['r2_score']:.2f})")
     ax.legend()
     ax.grid(True, alpha=0.3)
 
@@ -156,8 +156,8 @@ def _generate_regression_plots(results: EvaluationResults, output_dir: Path) -> 
         ax.set_xlabel("Residual Value")
         ax.set_ylabel("Frequency")
         ax.set_title(
-            f"Residual Distribution (μ={results.metrics['mean_residual']:.4f}, "
-            f"σ={results.metrics['std_residual']:.4f})"
+            f"Residual Distribution (μ={results.metrics['mean_residual']:.2f}, "
+            f"σ={results.metrics['std_residual']:.2f})"
         )
         ax.grid(True, alpha=0.3, axis="y")
 

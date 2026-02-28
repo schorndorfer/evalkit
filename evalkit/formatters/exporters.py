@@ -74,7 +74,7 @@ def export_to_csv(results: EvaluationResults, output_path: Path) -> None:
         # Write main metrics (skip complex objects like confusion matrix)
         for key, value in results.metrics.items():
             if isinstance(value, (int, float, np.number)):
-                writer.writerow([key, f"{value:.6f}" if isinstance(value, float) else value])
+                writer.writerow([key, f"{value:.2f}" if isinstance(value, float) else value])
             elif isinstance(value, str):
                 writer.writerow([key, value])
             # Skip arrays, dicts, etc.
@@ -108,17 +108,17 @@ def _format_classification_markdown(metrics: dict) -> list[str]:
     lines = ["## Classification Metrics\n", "| Metric | Value |", "|--------|-------|"]
 
     # Main metrics
-    lines.append(f"| Accuracy | {metrics['accuracy']:.4f} |")
-    lines.append(f"| Cohen's Kappa | {metrics['cohen_kappa']:.4f} |")
-    lines.append(f"| Matthews Corr Coeff | {metrics['matthews_corrcoef']:.4f} |")
-    lines.append(f"| Macro Avg Precision | {metrics['macro_avg_precision']:.4f} |")
-    lines.append(f"| Macro Avg Recall | {metrics['macro_avg_recall']:.4f} |")
-    lines.append(f"| Macro Avg F1-Score | {metrics['macro_avg_f1_score']:.4f} |")
+    lines.append(f"| Accuracy | {metrics['accuracy']:.2f} |")
+    lines.append(f"| Cohen's Kappa | {metrics['cohen_kappa']:.2f} |")
+    lines.append(f"| Matthews Corr Coeff | {metrics['matthews_corrcoef']:.2f} |")
+    lines.append(f"| Macro Avg Precision | {metrics['macro_avg_precision']:.2f} |")
+    lines.append(f"| Macro Avg Recall | {metrics['macro_avg_recall']:.2f} |")
+    lines.append(f"| Macro Avg F1-Score | {metrics['macro_avg_f1_score']:.2f} |")
 
     # Binary classification specifics
     if metrics.get("is_binary", False):
-        lines.append(f"| Sensitivity (Recall) | {metrics['sensitivity']:.4f} |")
-        lines.append(f"| Specificity | {metrics['specificity']:.4f} |")
+        lines.append(f"| Sensitivity (Recall) | {metrics['sensitivity']:.2f} |")
+        lines.append(f"| Specificity | {metrics['specificity']:.2f} |")
         lines.append(f"| True Positives | {metrics['true_positives']} |")
         lines.append(f"| True Negatives | {metrics['true_negatives']} |")
         lines.append(f"| False Positives | {metrics['false_positives']} |")
@@ -132,8 +132,8 @@ def _format_classification_markdown(metrics: dict) -> list[str]:
 
         for class_label, class_metrics in metrics["per_class"].items():
             lines.append(
-                f"| {class_label} | {class_metrics['precision']:.4f} | "
-                f"{class_metrics['recall']:.4f} | {class_metrics['f1_score']:.4f} | "
+                f"| {class_label} | {class_metrics['precision']:.2f} | "
+                f"{class_metrics['recall']:.2f} | {class_metrics['f1_score']:.2f} | "
                 f"{class_metrics['support']} |"
             )
 
@@ -144,17 +144,17 @@ def _format_regression_markdown(metrics: dict) -> list[str]:
     """Format regression metrics as markdown table."""
     lines = ["## Regression Metrics\n", "| Metric | Value |", "|--------|-------|"]
 
-    lines.append(f"| MAE | {metrics['mae']:.4f} |")
-    lines.append(f"| MSE | {metrics['mse']:.4f} |")
-    lines.append(f"| RMSE | {metrics['rmse']:.4f} |")
-    lines.append(f"| R² Score | {metrics['r2_score']:.4f} |")
-    lines.append(f"| Adjusted R² | {metrics['adjusted_r2']:.4f} |")
+    lines.append(f"| MAE | {metrics['mae']:.2f} |")
+    lines.append(f"| MSE | {metrics['mse']:.2f} |")
+    lines.append(f"| RMSE | {metrics['rmse']:.2f} |")
+    lines.append(f"| R² Score | {metrics['r2_score']:.2f} |")
+    lines.append(f"| Adjusted R² | {metrics['adjusted_r2']:.2f} |")
 
     if metrics.get("mape") is not None:
-        lines.append(f"| MAPE | {metrics['mape']:.4f} |")
+        lines.append(f"| MAPE | {metrics['mape']:.2f} |")
 
-    lines.append(f"| Median Absolute Error | {metrics['median_absolute_error']:.4f} |")
-    lines.append(f"| Max Error | {metrics['max_error']:.4f} |")
-    lines.append(f"| Explained Variance | {metrics['explained_variance']:.4f} |")
+    lines.append(f"| Median Absolute Error | {metrics['median_absolute_error']:.2f} |")
+    lines.append(f"| Max Error | {metrics['max_error']:.2f} |")
+    lines.append(f"| Explained Variance | {metrics['explained_variance']:.2f} |")
 
     return lines

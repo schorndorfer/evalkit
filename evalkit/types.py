@@ -35,7 +35,7 @@ class EvaluationResults:
         lines.append("\nMetrics:")
         for key, value in self.metrics.items():
             if isinstance(value, (int, float, np.number)):
-                lines.append(f"  {key}: {value:.4f}")
+                lines.append(f"  {key}: {value:.2f}")
             else:
                 lines.append(f"  {key}: {value}")
         return "\n".join(lines)
