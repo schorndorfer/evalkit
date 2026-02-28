@@ -71,11 +71,23 @@ def cli():
     help="Skip terminal output (useful with --output)",
 )
 @click.option(
+    "--tui-layout",
+    type=click.Choice(["minimal", "standard", "full"]),
+    default="full",
+    help="TUI layout style",
+)
+@click.option(
+    "--tui-theme",
+    type=click.Choice(["dark", "light", "auto"]),
+    default="dark",
+    help="TUI color theme",
+)
+@click.option(
     "--tui",
     is_flag=True,
     help="Launch interactive TUI (Terminal User Interface) - takes precedence over other output options",
 )
-def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_display, tui):
+def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_display, tui_layout, tui_theme, tui):
     """
     Evaluate predictions from a CSV file.
 
@@ -101,9 +113,11 @@ def evaluate(csv_file, pred_col, gold_col, mode, output, visualize, viz_dir, no_
         if tui:
             try:
                 from evalkit.tui import EvalKitApp
+                from evalkit.tui.config import TUIConfig
                 import os
                 filename = os.path.basename(csv_file)
-                app = EvalKitApp(results, filename)
+                config = TUIConfig.from_args(tui_layout, tui_theme)
+                app = EvalKitApp(results, filename, config)
                 app.run()
                 sys.exit(0)
             except ImportError:
