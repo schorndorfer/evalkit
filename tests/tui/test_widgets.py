@@ -1,13 +1,17 @@
 """Tests for TUI widgets."""
 
+import pytest
 from evalkit.tui.widgets.header import Header
 from evalkit.tui.widgets.footer import Footer
 from evalkit.tui.widgets.summary_metrics import SummaryMetrics
 from evalkit.tui.widgets.metrics_table import MetricsTable
 from evalkit.tui.widgets.confusion_matrix import ConfusionMatrixWidget
 from evalkit.tui.widgets.graph_panel import ScatterPlot, BarChart
+from evalkit.tui.widgets.error_dialog import ErrorDialog
+from evalkit.tui.widgets.help_screen import HelpScreen
 from evalkit.types import EvaluationResults, EvaluationMode
 from textual.widgets import Footer as TextualFooter
+from textual.app import App
 import numpy as np
 
 
@@ -201,3 +205,52 @@ def test_bar_chart_widget():
     # Verify compose method exists and is callable
     assert hasattr(widget, 'compose')
     assert callable(widget.compose)
+
+
+@pytest.mark.asyncio
+async def test_error_dialog():
+    """Test error dialog widget."""
+    dialog = ErrorDialog("Test Error", "This is a test error message")
+
+    assert dialog.title == "Test Error"
+    assert dialog.message == "This is a test error message"
+
+    # Verify compose method exists
+    assert hasattr(dialog, 'compose')
+    assert callable(dialog.compose)
+
+    # Test dialog can be instantiated in app context
+    class TestApp(App):
+        def __init__(self):
+            super().__init__()
+
+        def on_mount(self) -> None:
+            self.push_screen(ErrorDialog("Test", "Error message"))
+
+    app = TestApp()
+    async with app.run_test():
+        # Dialog should be pushed
+        assert len(app.screen_stack) > 0
+
+
+@pytest.mark.asyncio
+async def test_help_screen():
+    """Test help screen widget."""
+    help_screen = HelpScreen()
+
+    # Verify compose method exists
+    assert hasattr(help_screen, 'compose')
+    assert callable(help_screen.compose)
+
+    # Test help screen can be instantiated in app context
+    class TestApp(App):
+        def __init__(self):
+            super().__init__()
+
+        def on_mount(self) -> None:
+            self.push_screen(HelpScreen())
+
+    app = TestApp()
+    async with app.run_test():
+        # Help screen should be pushed
+        assert len(app.screen_stack) > 0
