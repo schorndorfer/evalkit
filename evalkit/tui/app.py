@@ -15,6 +15,7 @@ from evalkit.tui.widgets import (
     ScatterPlot,
     BarChart,
     ExportDialog,
+    HelpScreen,
 )
 from evalkit.tui.layouts import DashboardLayout
 from evalkit.formatters.exporters import export_results
@@ -70,7 +71,7 @@ class EvalKitApp(App):
 
     def action_help(self) -> None:
         """Show help screen."""
-        self.bell()  # Placeholder
+        self.push_screen(HelpScreen())
 
     def action_export(self) -> None:
         """Show export dialog."""
