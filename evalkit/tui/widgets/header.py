@@ -5,6 +5,7 @@ from textual.widgets import Static
 from textual.containers import Container
 
 from evalkit.types import EvaluationResults, EvaluationMode
+from evalkit.tui.utils import get_perf_color, get_perf_label
 
 
 class Header(Container):
@@ -27,30 +28,52 @@ class Header(Container):
         Compose header content.
 
         Returns:
-            Generator yielding header Static widget
+            Generator yielding header Static widgets
         """
         mode = self.results.mode.value.title()
         samples = self.results.sample_count
 
-        # Get top metric
+        # Get top metric based on mode
         if self.results.mode == EvaluationMode.CLASSIFICATION:
-            top_metric = f"Accuracy: {self.results.metrics.get('accuracy', 0):.4f}"
+            metric_name = "Accuracy"
+            metric_val = self.results.metrics.get("accuracy", 0)
+            mode_icon = "🔬"
         else:
-            top_metric = f"R²: {self.results.metrics.get('r2_score', 0):.4f}"
+            metric_name = "R²"
+            metric_val = self.results.metrics.get("r2_score", 0)
+            mode_icon = "📉"
 
-        header_text = f"📊 {mode} | 📁 {self.filename} | 📈 {samples} samples | {top_metric}"
+        color = get_perf_color(metric_val)
+        perf = get_perf_label(metric_val)
 
-        yield Static(header_text, id="header-content")
+        title_text = (
+            "[bold cyan]⚡ EvalKit[/bold cyan]  [dim]│[/dim]  "
+            "[bold]ML Evaluation Dashboard[/bold]"
+        )
+        info_text = (
+            f"{mode_icon} [bold]{mode}[/bold]  [dim]│[/dim]  "
+            f"📁 [dim]{self.filename}[/dim]  [dim]│[/dim]  "
+            f"📈 [bold]{samples:,}[/bold] samples  [dim]│[/dim]  "
+            f"{metric_name}: [bold {color}]{metric_val:.4f}[/bold {color}] [dim]({perf})[/dim]"
+        )
+
+        yield Static(title_text, id="header-title")
+        yield Static(info_text, id="header-info")
 
     DEFAULT_CSS = """
     Header {
-        height: 3;
+        height: 5;
         background: $panel;
-        border: solid $primary;
+        border: heavy $primary;
     }
 
-    #header-content {
-        padding: 1;
+    #header-title {
         text-align: center;
+        padding: 1 2 0 2;
+    }
+
+    #header-info {
+        text-align: center;
+        padding: 0 2;
     }
     """
