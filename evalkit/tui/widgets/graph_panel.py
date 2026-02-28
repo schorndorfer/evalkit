@@ -33,29 +33,30 @@ class ScatterPlot(Container):
             yield Static("Scatter plot only for regression")
             return
 
-        def plot_function(plot: plt) -> None:
-            """
-            Plot function for textual-plotext.
+        yield PlotextPlot()
 
-            Args:
-                plot: Plotext plot object
-            """
-            y_true = self.results.gold
-            y_pred = self.results.predicted
+    def on_mount(self) -> None:
+        """Setup plot after widget is mounted."""
+        if self.results.mode != EvaluationMode.REGRESSION:
+            return
 
-            # Scatter plot
-            plot.scatter(y_true, y_pred, marker="dot")
+        plt_widget = self.query_one(PlotextPlot)
+        plot = plt_widget.plt
 
-            # Perfect prediction line
-            min_val = min(y_true.min(), y_pred.min())
-            max_val = max(y_true.max(), y_pred.max())
-            plot.plot([min_val, max_val], [min_val, max_val], marker="hd")
+        y_true = self.results.gold
+        y_pred = self.results.predicted
 
-            plot.xlabel("Actual Values")
-            plot.ylabel("Predicted Values")
-            plot.title("Predicted vs Actual")
+        # Scatter plot
+        plot.scatter(y_true, y_pred, marker="dot")
 
-        yield PlotextPlot(plot_function)
+        # Perfect prediction line
+        min_val = min(y_true.min(), y_pred.min())
+        max_val = max(y_true.max(), y_pred.max())
+        plot.plot([min_val, max_val], [min_val, max_val], marker="hd")
+
+        plot.xlabel("Actual Values")
+        plot.ylabel("Predicted Values")
+        plot.title("Predicted vs Actual")
 
     DEFAULT_CSS = """
     ScatterPlot {
@@ -94,31 +95,36 @@ class BarChart(Container):
             yield Static("No per-class metrics available")
             return
 
-        def plot_function(plot: plt) -> None:
-            """
-            Plot function for textual-plotext.
+        yield PlotextPlot()
 
-            Args:
-                plot: Plotext plot object
-            """
-            per_class = metrics["per_class"]
-            classes = list(per_class.keys())
-            precision = [per_class[c]["precision"] for c in classes]
-            recall = [per_class[c]["recall"] for c in classes]
-            f1 = [per_class[c]["f1_score"] for c in classes]
+    def on_mount(self) -> None:
+        """Setup plot after widget is mounted."""
+        if self.results.mode != EvaluationMode.CLASSIFICATION:
+            return
 
-            # Multiple horizontal bar chart for all three metrics
-            plot.multiple_bar(
-                classes,
-                [precision, recall, f1],
-                orientation="h",
-                labels=["Precision", "Recall", "F1-Score"]
-            )
+        metrics = self.results.metrics
+        if "per_class" not in metrics:
+            return
 
-            plot.xlabel("Score")
-            plot.title("Per-Class Metrics")
+        plt_widget = self.query_one(PlotextPlot)
+        plot = plt_widget.plt
 
-        yield PlotextPlot(plot_function)
+        per_class = metrics["per_class"]
+        classes = list(per_class.keys())
+        precision = [per_class[c]["precision"] for c in classes]
+        recall = [per_class[c]["recall"] for c in classes]
+        f1 = [per_class[c]["f1_score"] for c in classes]
+
+        # Multiple horizontal bar chart for all three metrics
+        plot.multiple_bar(
+            classes,
+            [precision, recall, f1],
+            orientation="h",
+            labels=["Precision", "Recall", "F1-Score"]
+        )
+
+        plot.xlabel("Score")
+        plot.title("Per-Class Metrics")
 
     DEFAULT_CSS = """
     BarChart {

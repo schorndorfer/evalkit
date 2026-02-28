@@ -3,8 +3,16 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Static
 
-from evalkit.types import EvaluationResults
-from evalkit.tui.widgets import Header, Footer, SummaryMetrics, MetricsTable
+from evalkit.types import EvaluationMode, EvaluationResults
+from evalkit.tui.widgets import (
+    Header,
+    Footer,
+    SummaryMetrics,
+    MetricsTable,
+    ConfusionMatrixWidget,
+    ScatterPlot,
+    BarChart,
+)
 from evalkit.tui.layouts import DashboardLayout
 
 
@@ -40,12 +48,18 @@ class EvalKitApp(App):
         """
         yield Header(self.results, self.filename)
 
-        # Dashboard with 4 panels
+        # Dashboard with appropriate graphs based on mode
         with DashboardLayout():
             yield SummaryMetrics(self.results)
-            yield Static("Graph 1")  # Placeholder
-            yield MetricsTable(self.results)
-            yield Static("Graph 2")  # Placeholder
+
+            if self.results.mode == EvaluationMode.CLASSIFICATION:
+                yield ConfusionMatrixWidget(self.results)
+                yield MetricsTable(self.results)
+                yield BarChart(self.results)
+            else:  # Regression
+                yield ScatterPlot(self.results)
+                yield MetricsTable(self.results)
+                yield Static("Residual Plot")  # TODO: Future enhancement
 
         yield Footer()
 
