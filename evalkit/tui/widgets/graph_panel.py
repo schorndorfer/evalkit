@@ -123,11 +123,13 @@ class BarChart(Container):
         f1 = [per_class[c]["f1_score"] for c in classes]
 
         # Multiple horizontal bar chart for all three metrics
+        # Color palette: blue (precision), yellow (recall), green (F1 blend)
         plot.multiple_bar(
             classes,
             [precision, recall, f1],
             orientation="h",
             labels=["Precision", "Recall", "F1-Score"],
+            color=[33, 226, 46],  # Blue, yellow, green
         )
 
         plot.xlabel("Score")

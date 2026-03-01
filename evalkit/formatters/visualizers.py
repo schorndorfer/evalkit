@@ -74,21 +74,21 @@ def _generate_classification_plots(results: EvaluationResults, output_dir: Path)
         f1 = [per_class[c]["f1_score"] for c in classes]
 
         # Precision
-        axes[0].bar(classes, precision, color="steelblue")
+        axes[0].bar(classes, precision, color="#4A90E2", edgecolor="black", linewidth=1.5)
         axes[0].set_title("Precision by Class")
         axes[0].set_ylabel("Precision")
         axes[0].set_ylim([0, 1])
         axes[0].tick_params(axis="x", rotation=45)
 
         # Recall
-        axes[1].bar(classes, recall, color="coral")
+        axes[1].bar(classes, recall, color="#F5D033", edgecolor="black", linewidth=1.5)
         axes[1].set_title("Recall by Class")
         axes[1].set_ylabel("Recall")
         axes[1].set_ylim([0, 1])
         axes[1].tick_params(axis="x", rotation=45)
 
         # F1-Score
-        axes[2].bar(classes, f1, color="mediumseagreen")
+        axes[2].bar(classes, f1, color="#50C878", edgecolor="black", linewidth=1.5)
         axes[2].set_title("F1-Score by Class")
         axes[2].set_ylabel("F1-Score")
         axes[2].set_ylim([0, 1])
