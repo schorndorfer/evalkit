@@ -199,6 +199,42 @@ class MetricFormulaPanel(Container):
                 f"Micro F1 = [green bold]{metrics['micro_avg_f1_score']:.2f}[/green bold]"
             )
 
+        elif metric_name == "True Positives":
+            if metrics.get("is_binary"):
+                tp = metrics["true_positives"]
+                tn = metrics["true_negatives"]
+                fp = metrics["false_positives"]
+                fn = metrics["false_negatives"]
+                return self._confusion_matrix_display(tp, tn, fp, fn, "True Positives")
+            return "[dim]Binary classification only[/dim]"
+
+        elif metric_name == "True Negatives":
+            if metrics.get("is_binary"):
+                tp = metrics["true_positives"]
+                tn = metrics["true_negatives"]
+                fp = metrics["false_positives"]
+                fn = metrics["false_negatives"]
+                return self._confusion_matrix_display(tp, tn, fp, fn, "True Negatives")
+            return "[dim]Binary classification only[/dim]"
+
+        elif metric_name == "False Positives":
+            if metrics.get("is_binary"):
+                tp = metrics["true_positives"]
+                tn = metrics["true_negatives"]
+                fp = metrics["false_positives"]
+                fn = metrics["false_negatives"]
+                return self._confusion_matrix_display(tp, tn, fp, fn, "False Positives")
+            return "[dim]Binary classification only[/dim]"
+
+        elif metric_name == "False Negatives":
+            if metrics.get("is_binary"):
+                tp = metrics["true_positives"]
+                tn = metrics["true_negatives"]
+                fp = metrics["false_positives"]
+                fn = metrics["false_negatives"]
+                return self._confusion_matrix_display(tp, tn, fp, fn, "False Negatives")
+            return "[dim]Binary classification only[/dim]"
+
         elif metric_name == "Sensitivity (Recall)":
             if metrics.get("is_binary"):
                 tp = metrics["true_positives"]
@@ -298,6 +334,48 @@ class MetricFormulaPanel(Container):
 
         # Default fallback
         return f"[dim]Formula not available for {metric_name}[/dim]"
+
+    def _confusion_matrix_display(
+        self, tp: int, tn: int, fp: int, fn: int, highlight_metric: str
+    ) -> str:
+        """
+        Generate confusion matrix visualization with highlighted metric.
+
+        Args:
+            tp: True positives
+            tn: True negatives
+            fp: False positives
+            fn: False negatives
+            highlight_metric: Which metric to highlight
+
+        Returns:
+            Rich-formatted confusion matrix display
+        """
+        # Highlight styles based on which metric is selected
+        tp_style = "[yellow bold on blue]" if highlight_metric == "True Positives" else "[green]"
+        tn_style = "[yellow bold on blue]" if highlight_metric == "True Negatives" else "[green]"
+        fp_style = "[yellow bold on red]" if highlight_metric == "False Positives" else "[red]"
+        fn_style = "[yellow bold on red]" if highlight_metric == "False Negatives" else "[red]"
+
+        total = tp + tn + fp + fn
+
+        return (
+            f"[cyan bold]Confusion Matrix:[/cyan bold]\n\n"
+            f"                 Predicted\n"
+            f"              Pos       Neg\n"
+            f"         ┌─────────┬─────────┐\n"
+            f"    Pos  │ {tp_style}{tp:^7}[/] │ {fn_style}{fn:^7}[/] │\n"
+            f"Actual   │   TP    │   FN    │\n"
+            f"         ├─────────┼─────────┤\n"
+            f"    Neg  │ {fp_style}{fp:^7}[/] │ {tn_style}{tn:^7}[/] │\n"
+            f"         │   FP    │   TN    │\n"
+            f"         └─────────┴─────────┘\n\n"
+            f"[cyan bold]Breakdown:[/cyan bold]\n"
+            f"{tp_style}True Positives (TP)[/]:  {tp} ({tp/total*100:.1f}%)\n"
+            f"{tn_style}True Negatives (TN)[/]:  {tn} ({tn/total*100:.1f}%)\n"
+            f"{fp_style}False Positives (FP)[/]: {fp} ({fp/total*100:.1f}%)\n"
+            f"{fn_style}False Negatives (FN)[/]: {fn} ({fn/total*100:.1f}%)\n"
+        )
 
     DEFAULT_CSS = """
     MetricFormulaPanel {

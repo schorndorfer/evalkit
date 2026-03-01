@@ -62,7 +62,10 @@ class MetricsTable(Container):
         table.add_column("Value", key="value")
 
         # Add rows for each metric with formatted keys and colored values
+        # Skip is_binary as it's not a useful metric to display
         for key, value in self.results.metrics.items():
+            if key == "is_binary":
+                continue
             if isinstance(value, (int, float, np.number)):
                 self.metric_keys.append(key)  # Store original key
                 label = Text(_format_key(key), style="bold")
@@ -74,12 +77,12 @@ class MetricsTable(Container):
 
         yield table
 
-    def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
+    def on_data_table_row_highlighted(self, event: DataTable.RowHighlighted) -> None:
         """
-        Handle row selection in the metrics table.
+        Handle row highlighting (cursor movement) in the metrics table.
 
         Args:
-            event: Row selection event from DataTable
+            event: Row highlighted event from DataTable
         """
         # Get the row index and corresponding metric key
         row_index = event.cursor_row
