@@ -16,6 +16,8 @@ _KEY_OVERRIDES: dict[str, str] = {
     "mape": "MAPE",
     "r2_score": "R² Score",
     "cohen_kappa": "Cohen's Kappa",
+    "sensitivity": "Sensitivity (Recall)",
+    "matthews_corrcoef": "Matthews Corrcoef",
 }
 
 
