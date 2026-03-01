@@ -14,7 +14,7 @@ from evalkit.tui.widgets import (
     MetricsTable,
     ConfusionMatrixWidget,
     ScatterPlot,
-    BarChart,
+    MetricFormulaPanel,
     ExportDialog,
     HelpScreen,
     ErrorDialog,
@@ -93,11 +93,11 @@ class EvalKitApp(App):
                 if self.results.mode == EvaluationMode.CLASSIFICATION:
                     yield ConfusionMatrixWidget(self.results)
                     yield MetricsTable(self.results)
-                    yield BarChart(self.results)
+                    yield MetricFormulaPanel(self.results)
                 else:  # Regression
                     yield ScatterPlot(self.results)
                     yield MetricsTable(self.results)
-                    yield Static("Residual Plot")  # TODO: Future enhancement
+                    yield MetricFormulaPanel(self.results)
 
         yield Footer()
 
@@ -127,3 +127,18 @@ class EvalKitApp(App):
                     )
 
         self.push_screen(ExportDialog(), handle_export)
+
+    def on_metrics_table_metric_selected(self, message: MetricsTable.MetricSelected) -> None:
+        """
+        Handle metric selection from metrics table.
+
+        Args:
+            message: MetricSelected message containing the selected metric name
+        """
+        # Find the formula panel and update it
+        try:
+            formula_panel = self.query_one(MetricFormulaPanel)
+            formula_panel.update_formula(message.metric_name)
+        except Exception:
+            # Formula panel not found (might be in minimal/standard layout)
+            pass
