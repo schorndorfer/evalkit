@@ -49,8 +49,15 @@ class MetricsTable(Container):
         self.metric_keys = []  # Store metric keys in order
 
     def on_mount(self) -> None:
-        """Set border title after mounting."""
+        """Set border title and trigger initial metric display after mounting."""
         self.border_title = "[bold]All Metrics[/bold]"
+
+        # Trigger display of first metric on startup
+        if self.metric_keys:
+            first_metric = self.metric_keys[0]
+            formatted_name = _format_key(first_metric)
+            # Use call_later to ensure the formula panel is ready
+            self.call_later(self.post_message, self.MetricSelected(formatted_name))
 
     def compose(self) -> ComposeResult:
         """
