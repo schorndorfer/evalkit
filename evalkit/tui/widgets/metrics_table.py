@@ -12,9 +12,16 @@ from evalkit.types import EvaluationResults
 
 _KEY_OVERRIDES: dict[str, str] = {
     "mae": "MAE",
+    "mse": "MSE",
     "rmse": "RMSE",
     "mape": "MAPE",
     "r2_score": "R² Score",
+    "adjusted_r2": "Adjusted R²",
+    "median_absolute_error": "Median Absolute Error",
+    "max_error": "Max Error",
+    "explained_variance": "Explained Variance",
+    "mean_residual": "Mean Residual",
+    "std_residual": "Std Residual",
     "cohen_kappa": "Cohen's Kappa",
     "sensitivity": "Sensitivity (Recall)",
     "matthews_corrcoef": "Matthews Corrcoef",

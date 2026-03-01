@@ -370,6 +370,22 @@ class MetricFormulaPanel(Container):
                 f"  MAE = [green bold]{metrics['mae']:.2f}[/green bold]"
             )
 
+        elif metric_name == "MSE":
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"         1\n"
+                f"  MSE = ─ × Σ([blue]y_true[/blue] - [green]y_pred[/green])²\n"
+                f"         [yellow]n[/yellow]\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Mean Squared Error\n"
+                f"  • Squares errors, heavily penalizing large deviations\n"
+                f"  • Units are squared (not directly interpretable)\n"
+                f"  • [green]Lower is better[/green]\n"
+                f"  • RMSE = √MSE gives same units as target\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  MSE = [green bold]{metrics['mse']:.2f}[/green bold]"
+            )
+
         elif metric_name == "RMSE":
             return (
                 f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
@@ -399,6 +415,122 @@ class MetricFormulaPanel(Container):
                 f"  • [green]Lower is better[/green]\n\n"
                 f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
                 f"  MAPE = [green bold]{metrics['mape']:.2f}%[/green bold]"
+            )
+
+        elif metric_name == "Adjusted R²":
+            adj_r2_val = metrics['adjusted_r2']
+            r2_val = metrics['r2_score']
+            n = self.results.sample_count
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"                    ([yellow]n[/yellow] - 1)\n"
+                f"  Adj R² = 1 - (1 - R²) × ─────────\n"
+                f"                    ([yellow]n[/yellow] - [yellow]p[/yellow] - 1)\n\n"
+                f"  where:\n"
+                f"    [yellow]n[/yellow] = number of samples = {n}\n"
+                f"    [yellow]p[/yellow] = number of predictors = 1\n"
+                f"    R² = {r2_val:.2f}\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Adjusted R² Score\n"
+                f"  • R² adjusted for number of predictors\n"
+                f"  • Penalizes adding unnecessary predictors\n"
+                f"  • More reliable for model comparison\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  Adjusted R² = [green bold]{adj_r2_val:.2f}[/green bold]"
+            )
+
+        elif metric_name == "Median Absolute Error":
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"  MedAE = median(|[blue]y_true[/blue] - [green]y_pred[/green]|)\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Median Absolute Error\n"
+                f"  • Robust to outliers (unlike MAE/MSE)\n"
+                f"  • 50th percentile of absolute errors\n"
+                f"  • Same units as target variable\n"
+                f"  • [green]Lower is better[/green]\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  MedAE = [green bold]{metrics['median_absolute_error']:.2f}[/green bold]"
+            )
+
+        elif metric_name == "Max Error":
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"  Max Error = max(|[blue]y_true[/blue] - [green]y_pred[/green]|)\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Maximum Error (Worst-Case)\n"
+                f"  • Largest absolute error in predictions\n"
+                f"  • Useful for understanding worst-case performance\n"
+                f"  • Same units as target variable\n"
+                f"  • [green]Lower is better[/green]\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  Max Error = [green bold]{metrics['max_error']:.2f}[/green bold]"
+            )
+
+        elif metric_name == "Explained Variance":
+            ev_val = metrics['explained_variance']
+            if ev_val > 0.9:
+                level = "[green bold]Excellent[/green bold]"
+            elif ev_val > 0.7:
+                level = "[green]Good[/green]"
+            elif ev_val > 0.5:
+                level = "[yellow]Moderate[/yellow]"
+            else:
+                level = "[yellow]Weak[/yellow]"
+
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"           Var([blue]y_true[/blue] - [green]y_pred[/green])\n"
+                f"  EV = 1 - ───────────────────\n"
+                f"                Var([blue]y_true[/blue])\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Explained Variance Score\n"
+                f"  • Proportion of variance explained by model\n"
+                f"  • Similar to R² but without squared terms\n"
+                f"  • Range: (-∞, 1], best = 1\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  EV = [green bold]{ev_val:.2f}[/green bold]  ({level})"
+            )
+
+        elif metric_name == "Mean Residual":
+            mean_res = metrics['mean_residual']
+            if abs(mean_res) < 0.01 * abs(self.results.gold.mean()):
+                level = "[green]Near zero (unbiased)[/green]"
+            elif mean_res > 0:
+                level = "[yellow]Positive bias (over-predicting)[/yellow]"
+            else:
+                level = "[yellow]Negative bias (under-predicting)[/yellow]"
+
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"             1\n"
+                f"  Mean Res = ─ × Σ([blue]y_true[/blue] - [green]y_pred[/green])\n"
+                f"             [yellow]n[/yellow]\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Mean Residual (Bias)\n"
+                f"  • Average difference between actual and predicted\n"
+                f"  • Should be close to 0 for unbiased models\n"
+                f"  • Positive = model under-predicts on average\n"
+                f"  • Negative = model over-predicts on average\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  Mean Residual = [green bold]{mean_res:.2f}[/green bold]  ({level})"
+            )
+
+        elif metric_name == "Std Residual":
+            return (
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"            ┌──────────────────────────\n"
+                f"            │  1\n"
+                f"  Std Res = ╲ │  ─ × Σ(residual - μ)²\n"
+                f"             ╲│  [yellow]n[/yellow]\n\n"
+                f"  where residual = [blue]y_true[/blue] - [green]y_pred[/green]\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Standard Deviation of Residuals\n"
+                f"  • Spread/variability of prediction errors\n"
+                f"  • Same units as target variable\n"
+                f"  • [green]Lower is better[/green] (more consistent predictions)\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  Std Residual = [green bold]{metrics['std_residual']:.2f}[/green bold]"
             )
 
         # Default fallback

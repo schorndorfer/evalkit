@@ -134,8 +134,12 @@ class EvalKitApp(App):
         def show_initial_formula() -> None:
             try:
                 formula_panel = self.query_one(MetricFormulaPanel)
-                # Display "Accuracy" formula on startup
-                formula_panel.update_formula("Accuracy")
+                # Display first metric formula based on evaluation mode
+                if self.results.mode == EvaluationMode.CLASSIFICATION:
+                    first_metric = "Accuracy"
+                else:  # Regression
+                    first_metric = "MAE"
+                formula_panel.update_formula(first_metric)
             except Exception:
                 # Formula panel not present (minimal/standard layout)
                 pass
