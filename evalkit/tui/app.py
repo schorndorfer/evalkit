@@ -18,6 +18,7 @@ from evalkit.tui.widgets import (
     ExportDialog,
     HelpScreen,
     ErrorDialog,
+    SamplesModal,
 )
 from evalkit.tui.layouts import DashboardLayout
 from evalkit.formatters.exporters import export_results
@@ -33,6 +34,7 @@ class EvalKitApp(App):
         ("h", "help", "Help"),
         ("?", "help", "Help"),
         ("e", "export", "Export"),
+        ("s", "view_samples", "View Samples"),
     ]
 
     def __init__(
@@ -146,6 +148,37 @@ class EvalKitApp(App):
 
         # Use call_after to ensure all widgets are fully mounted
         self.call_after_refresh(show_initial_formula)
+
+    def action_view_samples(self) -> None:
+        """Open samples modal for the currently selected confusion matrix quadrant."""
+        try:
+            formula_panel = self.query_one(MetricFormulaPanel)
+        except Exception:
+            return
+
+        quadrant = formula_panel.current_cm_quadrant
+        if not quadrant:
+            return
+
+        indices_key = f"{quadrant}_indices"
+        indices = self.results.metrics.get(indices_key, [])
+
+        category_names = {
+            "tp": "True Positives",
+            "tn": "True Negatives",
+            "fp": "False Positives",
+            "fn": "False Negatives",
+        }
+        category = category_names[quadrant]
+
+        self.push_screen(
+            SamplesModal(
+                category=category,
+                indices=indices,
+                y_true=self.results.gold,
+                y_pred=self.results.predicted,
+            )
+        )
 
     def on_metrics_table_metric_selected(self, message: MetricsTable.MetricSelected) -> None:
         """
