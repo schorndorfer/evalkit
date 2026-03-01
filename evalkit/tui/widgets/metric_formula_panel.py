@@ -77,12 +77,15 @@ class MetricFormulaPanel(Container):
         if metric_name == "Accuracy":
             correct = int(metrics["accuracy"] * self.results.sample_count)
             total = self.results.sample_count
+            accuracy_pct = metrics["accuracy"] * 100
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"Accuracy = Correct Predictions / Total Predictions\n\n"
-                f"[cyan bold]Calculation:[/cyan bold]\n"
-                f"Accuracy = {correct} / {total}\n"
-                f"Accuracy = [green bold]{metrics['accuracy']:.2f}[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"              [yellow]Correct Predictions[/yellow]\n"
+                f"  Accuracy = ──────────────────────\n"
+                f"              [yellow]Total Predictions[/yellow]\n\n"
+                f"[cyan bold]═══ Calculation ═══[/cyan bold]\n\n"
+                f"  Accuracy = [yellow]{correct}[/yellow] / [yellow]{total}[/yellow]\n\n"
+                f"           = [green bold]{metrics['accuracy']:.2f}[/green bold]  ([green bold]{accuracy_pct:.1f}%[/green bold])"
             )
 
         elif metric_name == "Macro Avg Precision":
@@ -264,72 +267,138 @@ class MetricFormulaPanel(Container):
             return "[dim]Binary classification only[/dim]"
 
         elif metric_name == "Cohen's Kappa":
+            kappa_val = metrics['cohen_kappa']
+            # Determine interpretation level
+            if kappa_val < 0:
+                level = "[red]Poor agreement[/red]"
+            elif kappa_val < 0.21:
+                level = "[yellow]Slight agreement[/yellow]"
+            elif kappa_val < 0.41:
+                level = "[yellow]Fair agreement[/yellow]"
+            elif kappa_val < 0.61:
+                level = "[cyan]Moderate agreement[/cyan]"
+            elif kappa_val < 0.81:
+                level = "[green]Substantial agreement[/green]"
+            else:
+                level = "[green bold]Almost perfect agreement[/green bold]"
+
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"κ = (P_o - P_e) / (1 - P_e)\n"
-                f"where P_o = observed agreement, P_e = expected agreement by chance\n\n"
-                f"[cyan bold]Interpretation:[/cyan bold]\n"
-                f"< 0: Poor agreement\n"
-                f"0.01-0.20: Slight agreement\n"
-                f"0.21-0.40: Fair agreement\n"
-                f"0.41-0.60: Moderate agreement\n"
-                f"0.61-0.80: Substantial agreement\n"
-                f"0.81-1.00: Almost perfect agreement\n\n"
-                f"Cohen's Kappa = [green bold]{metrics['cohen_kappa']:.2f}[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"         [yellow]P_o[/yellow] - [yellow]P_e[/yellow]\n"
+                f"    κ = ─────────\n"
+                f"         1 - [yellow]P_e[/yellow]\n\n"
+                f"  where:\n"
+                f"    [yellow]P_o[/yellow] = observed agreement\n"
+                f"    [yellow]P_e[/yellow] = expected agreement by chance\n\n"
+                f"[cyan bold]═══ Interpretation Guide ═══[/cyan bold]\n\n"
+                f"  [dim]< 0.00[/dim]     Poor agreement\n"
+                f"  [dim]0.01-0.20[/dim]  Slight agreement\n"
+                f"  [dim]0.21-0.40[/dim]  Fair agreement\n"
+                f"  [dim]0.41-0.60[/dim]  Moderate agreement\n"
+                f"  [dim]0.61-0.80[/dim]  Substantial agreement\n"
+                f"  [dim]0.81-1.00[/dim]  Almost perfect agreement\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  κ = [green bold]{kappa_val:.2f}[/green bold]  ({level})"
             )
 
         elif metric_name == "Matthews Corrcoef":
+            mcc_val = metrics['matthews_corrcoef']
+            if mcc_val > 0.7:
+                level = "[green bold]Strong positive correlation[/green bold]"
+            elif mcc_val > 0.3:
+                level = "[green]Moderate positive correlation[/green]"
+            elif mcc_val > -0.3:
+                level = "[yellow]Weak or no correlation[/yellow]"
+            else:
+                level = "[red]Negative correlation[/red]"
+
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"MCC = (TP×TN - FP×FN) / √((TP+FP)(TP+FN)(TN+FP)(TN+FN))\n\n"
-                f"[cyan bold]Interpretation:[/cyan bold]\n"
-                f"+1 = Perfect prediction\n"
-                f" 0 = Random prediction\n"
-                f"-1 = Perfect inverse prediction\n\n"
-                f"Good for imbalanced datasets.\n"
-                f"Matthews Correlation Coefficient = [green bold]{metrics['matthews_corrcoef']:.2f}[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"         [yellow]TP[/yellow]×[yellow]TN[/yellow] - [yellow]FP[/yellow]×[yellow]FN[/yellow]\n"
+                f"  MCC = ─────────────────────────────\n"
+                f"        √([yellow]TP[/yellow]+[yellow]FP[/yellow])([yellow]TP[/yellow]+[yellow]FN[/yellow])([yellow]TN[/yellow]+[yellow]FP[/yellow])([yellow]TN[/yellow]+[yellow]FN[/yellow])\n\n"
+                f"[cyan bold]═══ Interpretation Guide ═══[/cyan bold]\n\n"
+                f"  [green]+1[/green]  Perfect prediction\n"
+                f"  [dim] 0[/dim]  Random prediction\n"
+                f"  [red]-1[/red]  Perfect inverse prediction\n\n"
+                f"  [dim italic]Good for imbalanced datasets[/dim italic]\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  MCC = [green bold]{mcc_val:.2f}[/green bold]  ({level})"
             )
 
         elif metric_name == "R² Score":
+            r2_val = metrics['r2_score']
+            if r2_val > 0.9:
+                level = "[green bold]Excellent fit[/green bold]"
+            elif r2_val > 0.7:
+                level = "[green]Good fit[/green]"
+            elif r2_val > 0.5:
+                level = "[yellow]Moderate fit[/yellow]"
+            elif r2_val > 0:
+                level = "[yellow]Weak fit[/yellow]"
+            else:
+                level = "[red]Poor fit (worse than mean)[/red]"
+
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"R² = 1 - (SS_res / SS_tot)\n"
-                f"where SS_res = Σ(y_true - y_pred)², SS_tot = Σ(y_true - ȳ)²\n\n"
-                f"[cyan bold]Interpretation:[/cyan bold]\n"
-                f"1.0 = Perfect predictions\n"
-                f"0.0 = Model performs as well as predicting the mean\n"
-                f"< 0 = Model performs worse than predicting the mean\n\n"
-                f"R² Score = [green bold]{metrics['r2_score']:.2f}[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"           [yellow]SS_res[/yellow]\n"
+                f"  R² = 1 - ────────\n"
+                f"           [yellow]SS_tot[/yellow]\n\n"
+                f"  where:\n"
+                f"    [yellow]SS_res[/yellow] = Σ([blue]y_true[/blue] - [green]y_pred[/green])²  [dim](residual sum of squares)[/dim]\n"
+                f"    [yellow]SS_tot[/yellow] = Σ([blue]y_true[/blue] - [blue]ȳ[/blue])²       [dim](total sum of squares)[/dim]\n\n"
+                f"[cyan bold]═══ Interpretation Guide ═══[/cyan bold]\n\n"
+                f"  [green]1.0[/green]   Perfect predictions\n"
+                f"  [dim]0.0[/dim]   Same as predicting the mean\n"
+                f"  [red]< 0[/red]   Worse than predicting the mean\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  R² = [green bold]{r2_val:.2f}[/green bold]  ({level})"
             )
 
         elif metric_name == "MAE":
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"MAE = (1/n) × Σ|y_true - y_pred|\n\n"
-                f"[cyan bold]Interpretation:[/cyan bold]\n"
-                f"Average absolute error between predictions and actual values.\n"
-                f"Lower is better. Same units as target variable.\n\n"
-                f"MAE = [green bold]{metrics['mae']:.2f}[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"         1\n"
+                f"  MAE = ─ × Σ |[blue]y_true[/blue] - [green]y_pred[/green]|\n"
+                f"         [yellow]n[/yellow]\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Mean Absolute Error\n"
+                f"  • Average distance between predictions and actual values\n"
+                f"  • Same units as target variable\n"
+                f"  • [green]Lower is better[/green]\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  MAE = [green bold]{metrics['mae']:.2f}[/green bold]"
             )
 
         elif metric_name == "RMSE":
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"RMSE = √((1/n) × Σ(y_true - y_pred)²)\n\n"
-                f"[cyan bold]Interpretation:[/cyan bold]\n"
-                f"Root mean squared error. Penalizes larger errors more than MAE.\n"
-                f"Lower is better. Same units as target variable.\n\n"
-                f"RMSE = [green bold]{metrics['rmse']:.2f}[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"           ┌──────────────────────\n"
+                f"           │  1\n"
+                f"  RMSE = ╲ │  ─ × Σ([blue]y_true[/blue] - [green]y_pred[/green])²\n"
+                f"          ╲│  [yellow]n[/yellow]\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Root Mean Squared Error\n"
+                f"  • Penalizes larger errors more than MAE\n"
+                f"  • Same units as target variable\n"
+                f"  • [green]Lower is better[/green]\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  RMSE = [green bold]{metrics['rmse']:.2f}[/green bold]"
             )
 
         elif metric_name == "MAPE":
             return (
-                f"[cyan bold]Formula:[/cyan bold]\n"
-                f"MAPE = (100/n) × Σ|((y_true - y_pred) / y_true)|\n\n"
-                f"[cyan bold]Interpretation:[/cyan bold]\n"
-                f"Mean absolute percentage error. Scale-independent metric.\n"
-                f"Expressed as percentage. Lower is better.\n\n"
-                f"MAPE = [green bold]{metrics['mape']:.2f}%[/green bold]"
+                f"[cyan bold]═══ Formula ═══[/cyan bold]\n\n"
+                f"          100      │ [blue]y_true[/blue] - [green]y_pred[/green] │\n"
+                f"  MAPE = ───── × Σ │ ──────────────── │\n"
+                f"           [yellow]n[/yellow]       │     [blue]y_true[/blue]      │\n\n"
+                f"[cyan bold]═══ Interpretation ═══[/cyan bold]\n\n"
+                f"  Mean Absolute Percentage Error\n"
+                f"  • Scale-independent metric (works across different scales)\n"
+                f"  • Expressed as percentage\n"
+                f"  • [green]Lower is better[/green]\n\n"
+                f"[cyan bold]═══ Result ═══[/cyan bold]\n\n"
+                f"  MAPE = [green bold]{metrics['mape']:.2f}%[/green bold]"
             )
 
         # Default fallback
