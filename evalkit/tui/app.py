@@ -128,6 +128,21 @@ class EvalKitApp(App):
 
         self.push_screen(ExportDialog(), handle_export)
 
+    def on_mount(self) -> None:
+        """Initialize the app after all widgets are mounted."""
+        # Trigger initial formula display for the first metric
+        def show_initial_formula() -> None:
+            try:
+                formula_panel = self.query_one(MetricFormulaPanel)
+                # Display "Accuracy" formula on startup
+                formula_panel.update_formula("Accuracy")
+            except Exception:
+                # Formula panel not present (minimal/standard layout)
+                pass
+
+        # Use call_after to ensure all widgets are fully mounted
+        self.call_after_refresh(show_initial_formula)
+
     def on_metrics_table_metric_selected(self, message: MetricsTable.MetricSelected) -> None:
         """
         Handle metric selection from metrics table.
