@@ -9,6 +9,7 @@ from evalkit.tui.widgets.confusion_matrix import ConfusionMatrixWidget
 from evalkit.tui.widgets.graph_panel import ScatterPlot, BarChart
 from evalkit.tui.widgets.error_dialog import ErrorDialog
 from evalkit.tui.widgets.help_screen import HelpScreen
+from evalkit.tui.widgets.samples_modal import SamplesModal, MAX_SAMPLES
 from evalkit.types import EvaluationResults, EvaluationMode
 from textual.widgets import Footer as TextualFooter
 from textual.app import App
@@ -253,4 +254,109 @@ async def test_help_screen():
     app = TestApp()
     async with app.run_test():
         # Help screen should be pushed
+        assert len(app.screen_stack) > 0
+
+
+def test_samples_modal_instantiation():
+    """Test SamplesModal can be instantiated with basic parameters."""
+    y_true = np.array([0, 1, 0, 1, 0, 1])
+    y_pred = np.array([0, 1, 1, 0, 0, 1])
+    indices = [1, 5]
+
+    modal = SamplesModal(
+        category="True Positives",
+        indices=indices,
+        y_true=y_true,
+        y_pred=y_pred,
+    )
+
+    assert modal.category == "True Positives"
+    assert modal.all_indices == indices
+    assert modal.display_indices == indices
+    assert len(modal.y_true) == len(y_true)
+    assert len(modal.y_pred) == len(y_pred)
+
+
+def test_samples_modal_empty_indices():
+    """Test SamplesModal with zero samples (empty category)."""
+    y_true = np.array([0, 1, 0, 1])
+    y_pred = np.array([0, 1, 0, 1])
+
+    modal = SamplesModal(
+        category="False Positives",
+        indices=[],
+        y_true=y_true,
+        y_pred=y_pred,
+    )
+
+    assert modal.all_indices == []
+    assert modal.display_indices == []
+    assert hasattr(modal, 'compose')
+    assert callable(modal.compose)
+
+
+def test_samples_modal_truncates_to_max_samples():
+    """Test SamplesModal truncates to MAX_SAMPLES for large index lists."""
+    y_true = np.zeros(MAX_SAMPLES + 10, dtype=int)
+    y_pred = np.zeros(MAX_SAMPLES + 10, dtype=int)
+    indices = list(range(MAX_SAMPLES + 10))
+
+    modal = SamplesModal(
+        category="True Negatives",
+        indices=indices,
+        y_true=y_true,
+        y_pred=y_pred,
+    )
+
+    assert len(modal.all_indices) == MAX_SAMPLES + 10
+    assert len(modal.display_indices) == MAX_SAMPLES
+
+
+@pytest.mark.asyncio
+async def test_samples_modal_renders_in_app():
+    """Test SamplesModal can be pushed onto screen stack in an app context."""
+    y_true = np.array([0, 1, 0, 1, 0, 1])
+    y_pred = np.array([0, 1, 1, 0, 0, 1])
+
+    class TestApp(App):
+        def __init__(self):
+            super().__init__()
+
+        def on_mount(self) -> None:
+            self.push_screen(
+                SamplesModal(
+                    category="True Positives",
+                    indices=[1, 5],
+                    y_true=y_true,
+                    y_pred=y_pred,
+                )
+            )
+
+    app = TestApp()
+    async with app.run_test():
+        assert len(app.screen_stack) > 0
+
+
+@pytest.mark.asyncio
+async def test_samples_modal_empty_renders_in_app():
+    """Test SamplesModal with empty indices renders without errors."""
+    y_true = np.array([0, 1, 0, 1])
+    y_pred = np.array([0, 1, 0, 1])
+
+    class TestApp(App):
+        def __init__(self):
+            super().__init__()
+
+        def on_mount(self) -> None:
+            self.push_screen(
+                SamplesModal(
+                    category="False Positives",
+                    indices=[],
+                    y_true=y_true,
+                    y_pred=y_pred,
+                )
+            )
+
+    app = TestApp()
+    async with app.run_test():
         assert len(app.screen_stack) > 0

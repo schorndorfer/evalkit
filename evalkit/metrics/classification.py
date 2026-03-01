@@ -94,6 +94,13 @@ def calculate_classification_metrics(
         metrics["false_positives"] = int(fp)
         metrics["false_negatives"] = int(fn)
         metrics["true_positives"] = int(tp)
+
+        # Store row indices for each quadrant to enable sample inspection
+        neg_label, pos_label = labels[0], labels[1]
+        metrics["tp_indices"] = list(np.where((y_true == pos_label) & (y_pred == pos_label))[0])
+        metrics["tn_indices"] = list(np.where((y_true == neg_label) & (y_pred == neg_label))[0])
+        metrics["fp_indices"] = list(np.where((y_true == neg_label) & (y_pred == pos_label))[0])
+        metrics["fn_indices"] = list(np.where((y_true == pos_label) & (y_pred == neg_label))[0])
     else:
         metrics["is_binary"] = False
 

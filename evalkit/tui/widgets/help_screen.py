@@ -54,6 +54,7 @@ class HelpScreen(ModalScreen):
             table.add_row("q / Ctrl+C", "Quit application")
             table.add_row("h / ?", "Show this help")
             table.add_row("e", "Export results")
+            table.add_row("s", "View samples (TP/TN/FP/FN)")
             table.add_row("Tab", "Focus next panel")
             table.add_row("Shift+Tab", "Focus previous panel")
             table.add_row("↑ ↓ ← →", "Navigate/scroll")

@@ -29,6 +29,7 @@ class MetricFormulaPanel(Container):
         super().__init__()
         self.results = results
         self.selected_metric = None
+        self.current_cm_quadrant: str | None = None  # "tp", "tn", "fp", or "fn"
 
     def on_mount(self) -> None:
         """Set border title after mounting."""
@@ -53,6 +54,15 @@ class MetricFormulaPanel(Container):
         """
         self.selected_metric = metric_name
         self.border_title = f"[bold]{metric_name}[/bold]"
+
+        # Track which CM quadrant is currently displayed (for sample viewing)
+        _cm_quadrants = {
+            "True Positives": "tp",
+            "True Negatives": "tn",
+            "False Positives": "fp",
+            "False Negatives": "fn",
+        }
+        self.current_cm_quadrant = _cm_quadrants.get(metric_name)
 
         # Get formula and calculation
         formula_text = self._get_formula_text(metric_name)
@@ -560,6 +570,24 @@ class MetricFormulaPanel(Container):
 
         total = tp + tn + fp + fn
 
+        # Show hint to view samples if indices are available
+        quadrant_counts = {
+            "True Positives": tp,
+            "True Negatives": tn,
+            "False Positives": fp,
+            "False Negatives": fn,
+        }
+        count = quadrant_counts[highlight_metric]
+        has_indices = "tp_indices" in self.results.metrics
+        if has_indices:
+            sample_word = "sample" if count == 1 else "samples"
+            samples_hint = (
+                f"\n[dim]Press [cyan bold]s[/cyan bold] to view "
+                f"{count} {sample_word} in this category[/dim]"
+            )
+        else:
+            samples_hint = ""
+
         return (
             f"[cyan bold]Confusion Matrix:[/cyan bold]\n\n"
             f"                 Predicted\n"
@@ -575,7 +603,8 @@ class MetricFormulaPanel(Container):
             f"{tp_style}True Positives (TP)[/]:  {tp} ({tp/total*100:.1f}%)\n"
             f"{tn_style}True Negatives (TN)[/]:  {tn} ({tn/total*100:.1f}%)\n"
             f"{fp_style}False Positives (FP)[/]: {fp} ({fp/total*100:.1f}%)\n"
-            f"{fn_style}False Negatives (FN)[/]: {fn} ({fn/total*100:.1f}%)\n"
+            f"{fn_style}False Negatives (FN)[/]: {fn} ({fn/total*100:.1f}%)"
+            f"{samples_hint}\n"
         )
 
     DEFAULT_CSS = """

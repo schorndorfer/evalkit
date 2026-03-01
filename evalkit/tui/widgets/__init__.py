@@ -10,6 +10,7 @@ from evalkit.tui.widgets.metric_formula_panel import MetricFormulaPanel
 from evalkit.tui.widgets.export_dialog import ExportDialog
 from evalkit.tui.widgets.help_screen import HelpScreen
 from evalkit.tui.widgets.error_dialog import ErrorDialog
+from evalkit.tui.widgets.samples_modal import SamplesModal
 
 __all__ = [
     "Header",
@@ -23,4 +24,5 @@ __all__ = [
     "ExportDialog",
     "HelpScreen",
     "ErrorDialog",
+    "SamplesModal",
 ]
